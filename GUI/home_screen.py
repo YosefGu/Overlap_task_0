@@ -1,51 +1,71 @@
 import flet as ft
-from Business_logic.file_handling import FileHandling
 
-def home_screen(page: ft.Page, set_locations):
 
-    title = ft.Text("Welcome", size=24)
-    description = ft.Text(
-        "In this system you can select a flight log file and display it on a map.",
-        size=18
-    )
-    file = ft.Text("", size=16)
-    message = ft.Text("", size=16)
 
-    def pick_file():
-        file_picker = ft.FilePicker(on_result=on_file_picked)
-        page.overlay.append(file_picker)
-        page.update()
-        file_picker.pick_files(allowed_extensions=['bin'], )          
+class HomeScreen:
+    def __init__(self, page: ft.Page, set_path):
+        self.page = page
+        self.set_path = set_path
+        self.message = ft.Text("", size=16)
+        self.container = self.build()
 
-    def on_file_picked(e: ft.FilePickerResultEvent):
+    def build(self):
+        title = ft.Text("Welcome", size=34, weight=ft.FontWeight.BOLD)
+        description = ft.Text(
+            "Select a flight log file (.bin) to analyze and view the flight path on the map.",
+            size=20,
+            color=ft.Colors.GREY_800,
+        )
+
+        choose_btn = ft.ElevatedButton(
+            content=ft.Row(
+                [
+                    ft.Text("Choose file", size=16),
+                    ft.Icon(ft.Icons.UPLOAD_FILE)
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            )
+           ,
+            width=150,
+            height=50,
+            on_click=lambda e: self.pick_file(),
+        )
+
+        card = ft.Card(
+            content=ft.Container(
+                content=ft.Column(
+                    [title, description, ft.Divider(), self.message, choose_btn],
+                    spacing=20,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                padding=100,
+                margin=50,
+                border_radius=15,
+                bgcolor="#B6D5DE",
+                shadow=ft.BoxShadow(blur_radius=8, spread_radius=2, color=ft.Colors.GREY_200),
+            )
+        )
+
+
+        return ft.Container(
+            content=card,
+            expand=True,
+            alignment=ft.alignment.center,
+            bgcolor=ft.Colors.BLUE_GREY_50,
+        )
+
+    # Logic
+    def pick_file(self):
+        file_picker = ft.FilePicker(on_result=self.on_file_picked)
+        self.page.overlay.append(file_picker)
+        self.page.update()
+        file_picker.pick_files(allowed_extensions=["bin"])
+
+    def on_file_picked(self, e: ft.FilePickerResultEvent):
         if e.files:
-            file.value = f"Picked file: {e.files[0].name}"
-            message.value = "The file is being processed."
-            file.update()
-            message.update()
+            self.set_path(e.files[0].path)
+            self.page.go('/map')
         else:
-            file.value = "No picked file"
-        
+            self.message.value = "No file selected."
+            self.page.update()
 
-    def file_processing():
-        # print("start reading file.")
-        # path = r"C:\Users\yos77\Documents\ness\overlap\log_file_test_01.bin"
-        # file_handling = FileHandling(path)
-        # points = file_handling.run()
-        # set_locations(points)
-        # print("getting points")
-        # points = extarct_coords_from_bin_file(path)
-        # print(points[:100])
-        # print(len(points), len(set(points)))
-        # set_locations(set(points[:100]))
-        # set_locations(
-        #     [(31.2699056, 34.5375736), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699055, 34.5375735), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699055, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699054, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699053, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699052, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699052, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699052, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699052, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699052, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699051, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699051, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.269905, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699049, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699049, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699049, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699048, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699047, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699046, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699045, 34.5375731), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699044, 34.5375731), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699043, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699043, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699042, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699041, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699041, 34.5375732), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.269904, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.269904, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.269904, 34.5375733), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699039, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699038, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699039, 34.5375734), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699039, 34.5375735), (31.2707977, 34.5374832), (31.2707977, 34.5374832), (31.2699039, 34.5375735)]
-        # )
-        page.go('/map')
-        # print("moving to map")
-    
-    btn = ft.ElevatedButton("Choose file", on_click= lambda e: pick_file())
-
-    btn_to_map = ft.ElevatedButton("Go to map", on_click=lambda _: move_to_map_page())
-
-    return ft.Column([title, description, file, btn, btn_to_map])
