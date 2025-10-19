@@ -9,9 +9,9 @@ class FileHandling():
 
     def run(self):
         points = self.extarct_coords_from_bin_file()
-        print(len(points))
+        # print(len(points))
         updateted_points = self.removing_nearby_points(points)
-        print(len(updateted_points))
+        # print(len(updateted_points))
         return updateted_points
     
     def extarct_coords_from_bin_file(self):
@@ -26,9 +26,6 @@ class FileHandling():
         return points
 
     def removing_nearby_points(self, points):
-        filtered = [points[0]]
-        for p in points[1:]:
-            if geodesic(filtered[-1], p).meters > 250:
-                filtered.append(p)
-        return filtered
+        return points[::40]
+      
 
