@@ -1,7 +1,22 @@
+"""flet module for rendring UI"""
+
 import flet as ft
+from GUI.components.button import create_styled_button
+from GUI.components.container import create_styled_container
 
 
 class HomeScreen:
+    """
+    Home screen UI for selecting a flight log file.
+
+    Public methods:
+    - run(): builds the container
+
+    Private methods:
+    - _build(): builds the view
+    - pick_file(): open a dialog for choosing bin file
+    - _on_file_picked(): handle file picked
+    """
 
     def __init__(self, page: ft.Page):
         self.page = page
@@ -9,6 +24,7 @@ class HomeScreen:
         self.container = self._build()
 
     def _build(self) -> ft.Container:
+        """Create page with title, description, and choose file button."""
         title = ft.Text("Welcome", size=34, weight=ft.FontWeight.BOLD, color="#3383C4")
 
         description = ft.Text(
@@ -18,24 +34,10 @@ class HomeScreen:
             text_align=ft.TextAlign.CENTER,
         )
 
-        choose_btn = ft.ElevatedButton(
-            content=ft.Row(
-                [ft.Text("Choose file", size=16, weight=ft.FontWeight.W_500), ft.Icon(ft.Icons.UPLOAD_FILE)],
-                alignment=ft.MainAxisAlignment.CENTER,
-                spacing=10,
-            ),
-            width=160,
-            height=50,
-            style=ft.ButtonStyle(
-                bgcolor=ft.Colors.BLUE_600,
-                color=ft.Colors.WHITE,
-                shape=ft.RoundedRectangleBorder(radius=10),
-                overlay_color=ft.Colors.BLUE_400,
-            ),
-            on_click=lambda e: self._pick_file(),
+        choose_btn = create_styled_button(
+            "Choose file", self._pick_file, ft.Icon(ft.Icons.UPLOAD_FILE)
         )
-
-        container = ft.Container(
+        card_content = ft.Container(
             content=ft.Column(
                 [title, description, ft.Divider(), self.message, choose_btn],
                 spacing=20,
@@ -47,22 +49,18 @@ class HomeScreen:
             bgcolor="#B6D5DE",
             shadow=ft.BoxShadow(blur_radius=8, spread_radius=2, color=ft.Colors.GREY_200),
         )
-
-        return ft.Container(
-            content=container,
-            expand=True,
-            alignment=ft.alignment.center,
-            bgcolor=ft.Colors.RED_50,
-        )
+        return create_styled_container(card_content)
 
     # Logic
-    def _pick_file(self) -> None:
+    def _pick_file(self, e) -> None:
+        """open file picker dialog."""
         file_picker = ft.FilePicker(on_result=self._on_file_picked)
         self.page.overlay.append(file_picker)
         self.page.update()
         file_picker.pick_files(allowed_extensions=["bin"])
 
     def _on_file_picked(self, e: ft.FilePickerResultEvent) -> None:
+        """handle the file picker event"""
         if e.files:
             self.page.client_storage.set("path", e.files[0].path)
             self.page.go("/map")
