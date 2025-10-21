@@ -1,6 +1,4 @@
 from pymavlink import mavutil
-from geopy.distance import geodesic
-
 
 class FileHandling():
 
