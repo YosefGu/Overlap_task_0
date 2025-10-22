@@ -9,7 +9,7 @@ class FileHandling:
 
     def run(self) -> pd.DataFrame:
         df_points = self._extarct_coords_from_bin_file()
-        df_points = self._drop_duplicait(df_points)
+        df_points = self._drop_duplicate(df_points)
         df_points = self._removing_nearby_points(df_points, 40)
         return df_points
 
@@ -32,7 +32,7 @@ class FileHandling:
         df = pd.concat(dfs, ignore_index=True)
         return df
 
-    def _drop_duplicait(self, df_points: pd.DataFrame) -> pd.DataFrame:
+    def _drop_duplicate(self, df_points: pd.DataFrame) -> pd.DataFrame:
         shifted = df_points.shift()
         comparison = df_points == shifted
         same_as_prev = comparison.all(axis=1)
